@@ -3,6 +3,9 @@ name: Docker CI
 on:
   push:
     branches: [ main ]
+permissions:
+  contents: read
+  packages: write    
 
 jobs:
   build-and-test:
@@ -19,4 +22,7 @@ jobs:
         run: docker run --rm todo-practice npm test  
 
       - name: Tag the image with the commit SHA
-        run: docker tag todo-practice todo-practice:${{ github.sha }}  
+        run: docker tag todo-practice todo-practice:${{ github.sha }} 
+
+       - name: Push to GHCR
+  run: docker push ghcr.io/${{ github.actor }}/todo-practice:${{ github.sha }}  
