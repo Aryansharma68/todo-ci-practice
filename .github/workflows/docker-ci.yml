@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out the code
+      - name: Check out the codegit commit -m "Fix GHCR image name"
         uses: actions/checkout@v4
 
       - name: Build the Docker image
@@ -32,4 +32,4 @@ jobs:
         run: docker tag todo-practice ghcr.io/aryansharma68/todo-practice:${{ github.sha }}
       
       - name: Push to GHCR
-        run: docker push ghcr.io/${{ github.actor }}/todo-practice:${{ github.sha }}
+        run: docker push ghcr.io/aryansharma68/todo-practice:${{ github.sha }}
