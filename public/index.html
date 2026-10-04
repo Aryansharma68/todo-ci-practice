@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Docker To-Do</title>
+</head>
+<body>
+  <h1>Docker To-Do</h1>
+
+  <input id="todoInput" placeholder="Enter a task" />
+  <button onclick="addTodo()">Add</button>
+
+  <ul id="todoList"></ul>
+
+  <script>
+    async function loadTodos() {
+      const res = await fetch("/api/todos");
+      const todos = await res.json();
+
+      const list = document.getElementById("todoList");
+      list.innerHTML = "";
+
+      todos.forEach(todo => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+          <input
+            type="checkbox"
+            ${todo.done ? "checked" : ""}
+            onchange="toggleTodo('${todo._id}', this.checked)"
+          />
+          ${todo.text}
+          <button onclick="deleteTodo('${todo._id}')">Delete</button>
+        `;
+
+        list.appendChild(li);
+      });
+    }
+
+    async function addTodo() {
+      const input = document.getElementById("todoInput");
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      await fetch("/api/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text })
+      });
+
+      input.value = "";
+      loadTodos();
+    }
+
+    async function toggleTodo(id, done) {
+      await fetch(`/api/todos/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ done })
+      });
+
+      loadTodos();
+    }
+
+    async function deleteTodo(id) {
+      await fetch(`/api/todos/${id}`, {
+        method: "DELETE"
+      });
+
+      loadTodos();
+    }
+
+    loadTodos();
+  </script>
+</body>
+</html>
